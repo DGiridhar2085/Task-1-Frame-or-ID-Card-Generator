@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>HH Goa 2026 · Frame &amp; ID Generator</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Orbitron:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 (Free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- heic2any for HEIC conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js">
+    </script>
+
+    <!-- QRCode.js for QR generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+
+    <style>
+        /* ============================================================
+                   CSS: Dark Tropical Cyberpunk Theme
+                   ============================================================ */
+        :root {
+            --color-bg: #0f172a;
+            --color-surface: rgba(255, 255, 255, 0.05);
+            --color-surface-glass: rgba(255, 255, 255, 0.08);
+            --color-border: rgba(255, 255, 255, 0.12);
+            --color-text: #e2e8f0;
+            --color-text-dim: #94a3b8;
+            --color-accent-amber: #ff6b35;
+            --color-accent-teal: #00f2fe;
+            --color-accent-gold: #fbbf24;
+            --color-accent-pink: #f472b6;
+            --color-accent-purple: #a78bfa;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+            --shadow-glow: 0 8px 32px rgba(0, 242, 254, 0.15);
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-display: 'Orbitron', monospace;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+            padding: 1.5rem;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(255, 107, 53, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 242, 254, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(251, 191, 36, 0.04) 0%, transparent 50%);
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ---- Layout ---- */
+        .app-container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ---- Header ---- */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--color-surface-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .brand-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--color-accent-amber), var(--color-accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, #fff 30%, var(--color-accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-sub {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--color-text-dim);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-left: 0.25rem;
+            -webkit-text-fill-color: var(--color-text-dim);
+        }
+        .brand-year {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--color-accent-gold);
+            font-size: 0.85rem;
+            -webkit-text-fill-color: var(--color-accent-gold);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .header-actions .badge-version {
+            font-size: 0.6rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 40px;
+            color: var(--color-accent-teal);
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        /* ---- Mode Toggle ---- */
+        .mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.4rem;
+            border-radius: 60px;
+            border: 1px solid var(--color-border);
+        }
+        .mode-btn {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--color-text-dim);
+            transition: var(--transition);
+            letter-spacing: 0.02em;
+        }
+        .mode-btn:hover {
+            color: var(--color-text);
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--color-accent-amber), var(--color-accent-teal));
+            color: #0f172a;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.25);
+        }
+
+        /* ---- Main Grid ---- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ---- Cards ---- */
+        .card {
+            background: var(--color-surface-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+        .card-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-text-dim);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card-title i {
+            color: var(--color-accent-teal);
+        }
+
+        /* ---- Dropzone ---- */
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-md);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--color-accent-teal);
+            background: rgba(0, 242, 254, 0.04);
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.04);
+        }
+        .dropzone .icon {
+            font-size: 2.4rem;
+            color: var(--color-text-dim);
+            opacity: 0.5;
+        }
+        .dropzone .label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .dropzone .sub {
+            font-size: 0.75rem;
+            color: var(--color-text-dim);
+        }
+        .dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .dropzone .preview-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-accent-teal);
+            box-shadow: 0 0 24px rgba(0, 242, 254, 0.2);
+            display: none;
+        }
+        .dropzone.has-image .preview-thumb {
+            display: block;
+        }
+        .dropzone.has-image .icon,
+        .dropzone.has-image .label,
+        .dropzone.has-image .sub {
+            display: none;
+        }
+        .dropzone .sample-btn {
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--color-text-dim);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .dropzone .sample-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--color-text);
+        }
+
+        /* ---- Controls ---- */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .control-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color-text-dim);
+        }
+        .control-group input,
+        .control-group select {
+            font-family: var(--font-sans);
+            padding: 0.6rem 0.9rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--color-text);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--color-accent-teal);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15);
+        }
+        .control-group input::placeholder {
+            color: var(--color-text-dim);
+            opacity: 0.5;
+        }
+        .control-group select option {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        @media (max-width: 480px) {
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* theme pills */
+        .theme-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .theme-pill {
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--color-text-dim);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .theme-pill:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--color-text);
+        }
+        .theme-pill.active {
+            background: linear-gradient(135deg, var(--color-accent-amber), var(--color-accent-teal));
+            color: #0f172a;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+        }
+        .theme-pill .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* magic button */
+        .magic-btn {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+        .magic-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 24px rgba(167, 139, 250, 0.3);
+        }
+        .magic-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ---- Preview Canvas Wrapper ---- */
+        .preview-wrapper {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--color-border);
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .preview-wrapper canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            background: #0a0f1f;
+            touch-action: none;
+        }
+        .preview-wrapper .zoom-hint {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 0.6rem;
+            color: var(--color-text-dim);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* ---- Action Buttons ---- */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+        .btn {
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.55rem 1.2rem;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent-amber), var(--color-accent-teal));
+            color: #0f172a;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 30px rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #ff7a4a, #1af5fe);
+        }
+        .btn-twitter {
+            background: #1d9bf0;
+            color: #fff;
+            border-color: transparent;
+        }
+        .btn-twitter:hover {
+            background: #1a8cd8;
+            box-shadow: 0 4px 20px rgba(29, 155, 240, 0.3);
+        }
+        .btn-copy {
+            background: rgba(167, 139, 250, 0.15);
+            color: #c4b5fd;
+            border-color: rgba(167, 139, 250, 0.2);
+        }
+        .btn-copy:hover {
+            background: rgba(167, 139, 250, 0.25);
+        }
+
+        /* ---- Toast ---- */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 360px;
+            width: 100%;
+        }
+        .toast {
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--radius-sm);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            font-size: 0.85rem;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .toast.success {
+            border-color: var(--color-accent-teal);
+        }
+        .toast.error {
+            border-color: #ef4444;
+        }
+        .toast i {
+            font-size: 1.1rem;
+        }
+        .toast.success i {
+            color: var(--color-accent-teal);
+        }
+        .toast.error i {
+            color: #ef4444;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ---- Responsive fine-tune ---- */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.75rem;
+            }
+            .app-header {
+                padding: 0.75rem 1rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            .brand-title {
+                font-size: 1rem;
+            }
+            .mode-toggle {
+                width: 100%;
+                justify-content: stretch;
+            }
+            .mode-btn {
+                flex: 1;
+                text-align: center;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.6rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .actions .btn {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.9rem;
+            }
+            .toast-container {
+                right: 0.75rem;
+                bottom: 0.75rem;
+                max-width: calc(100% - 1.5rem);
+            }
+        }
+
+        /* hidden helper */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Format-specific controls */
+        .format-controls {
+            transition: var(--transition);
+        }
+        .format-controls.pfp-controls {
+            display: block;
+        }
+        .format-controls.id-controls {
+            display: none;
+        }
+        body.mode-id .format-controls.pfp-controls {
+            display: none;
+        }
+        body.mode-id .format-controls.id-controls {
+            display: block;
+        }
+
+        /* QR placeholder in preview */
+        .qr-placeholder {
+            display: inline-block;
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        /* small badge pills for stack */
+        .stack-pills-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.25rem;
+        }
+        .stack-pill-tag {
+            font-size: 0.55rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            color: var(--color-accent-teal);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* loader spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--color-accent-teal);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="app">
+
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="brand-icon"><i class="fas fa-sun"></i></span>
+                <span class="brand-title">HH Goa <span class="brand-year">2026</span></span>
+                <span class="brand-sub">Generator</span>
+            </div>
+            <div class="header-actions">
+                <span class="badge-version"><i class="fas fa-bolt" style="margin-right:4px;"></i> v2.0</span>
+                <div class="mode-toggle" id="modeToggle">
+                    <button class="mode-btn active" data-mode="pfp"><i class="fas fa-user-circle"></i> PFP</button>
+                    <button class="mode-btn" data-mode="id"><i class="fas fa-id-card"></i> ID Card</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN GRID -->
+        <div class="main-grid">
+
+            <!-- LEFT: Controls -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-sliders-h"></i> Controls</div>
+
+                <!-- Dropzone -->
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="fileInput" accept="image/*" />
+                    <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <div class="label">Drop your photo here</div>
+                    <div class="sub">JPG · PNG · WebP · HEIC</div>
+                    <img class="preview-thumb" id="thumbPreview" alt="preview" />
+                    <button class="sample-btn" id="sampleBtn" type="button"><i class="fas fa-user-astronaut"></i> Try sample</button>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+
+                    <!-- PFP Controls -->
+                    <div class="format-controls pfp-controls">
+                        <div class="control-group">
+                            <label>Frame Theme</label>
+                            <div class="theme-pills" id="themePills">
+                                <button class="theme-pill active" data-theme="goa-sunset"><span class="dot" style="background:#ff6b35;"></span>Goa Sunset</button>
+                                <button class="theme-pill" data-theme="cyber-neon"><span class="dot" style="background:#00f2fe;"></span>Cyber Neon</button>
+                                <button class="theme-pill" data-theme="golden-elite"><span class="dot" style="background:#fbbf24;"></span>Golden Elite</button>
+                                <button class="theme-pill" data-theme="minimal-dark"><span class="dot" style="background:#334155;"></span>Minimal Dark</button>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Sticker overlay</label>
+                                <select id="stickerSelect">
+                                    <option value="none">None</option>
+                                    <option value="sun">☀️ Sun</option>
+                                    <option value="bolt">⚡ Bolt</option>
+                                    <option value="star">⭐ Star</option>
+                                    <option value="wave">🌊 Wave</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Filter</label>
+                                <select id="filterSelect">
+                                    <option value="none">None</option>
+                                    <option value="warm">Warm</option>
+                                    <option value="neon">Neon</option>
+                                    <option value="vintage">Vintage</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ID Card Controls -->
+                    <div class="format-controls id-controls">
+                        <div class="control-group">
+                            <label>Full Name</label>
+                            <input type="text" id="idName" placeholder="e.g. Alex Rivera" value="Alex Rivera" />
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>X / Twitter Handle</label>
+                                <input type="text" id="idHandle" placeholder="@handle" value="@alex_builder" />
+                            </div>
+                            <div class="control-group">
+                                <label>Stack / Role</label>
+                                <input type="text" id="idStack" placeholder="e.g. Solidity, React, AI" value="Solidity · React · AI" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Builder Title <button class="magic-btn" id="magicTitleBtn" type="button"><i class="fas fa-wand-magic-sparkles"></i> ✨ Magic</button></label>
+                            <input type="text" id="idTitle" placeholder="e.g. GPU Whisperer" value="10x Ship Machine" />
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Card Format</label>
+                                <select id="idFormat">
+                                    <option value="portrait">3:4 Portrait</option>
+                                    <option value="landscape">16:9 Landscape</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>QR Data</label>
+                                <input type="text" id="qrData" placeholder="text or URL" value="HH Goa 2026" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common: DPI -->
+                    <div class="control-group">
+                        <label>Export DPI</label>
+                        <select id="dpiSelect">
+                            <option value="1">1× (Standard)</option>
+                            <option value="2" selected>2× (High)</option>
+                            <option value="4">4× (Ultra)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Preview + Actions -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-eye"></i> Preview</div>
+
+                <div class="preview-wrapper" id="previewWrapper">
+                    <canvas id="previewCanvas" width="800" height="800"></canvas>
+                    <div class="zoom-hint"><i class="fas fa-arrows-alt"></i> drag · scroll</div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" id="downloadPngBtn"><i class="fas fa-download"></i> PNG</button>
+                    <button class="btn btn-primary" id="downloadJpgBtn"><i class="fas fa-download"></i> JPG</button>
+                    <button class="btn btn-copy" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
+                    <button class="btn btn-twitter" id="shareBtn"><i class="fab fa-x-twitter"></i> Share</button>
+                </div>
+                <div style="margin-top:0.5rem;font-size:0.65rem;color:var(--color-text-dim);display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <span><i class="fas fa-arrows-alt" style="margin-right:4px;"></i>Drag to pan</span>
+                    <span><i class="fas fa-search-plus" style="margin-right:4px;"></i>Scroll to zoom</span>
+                    <span id="renderInfo">800×800 · 1:1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer style="margin-top:2rem;padding:1rem 0.5rem;text-align:center;font-size:0.7rem;color:var(--color-text-dim);border-top:1px solid var(--color-border);">
+            <span>HH Goa 2026 · Built with <i class="fas fa-heart" style="color:var(--color-accent-amber);"></i> for builders</span>
+            <span style="margin:0 0.5rem;">·</span>
+            <span>All processing is client-side — zero uploads</span>
+        </footer>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================
+    JAVASCRIPT — Full Application
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ------------------------------------------------------------
+            // DOM refs
+            // ------------------------------------------------------------
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const wrapper = document.getElementById('previewWrapper');
+
+            const fileInput = document.getElementById('fileInput');
+            const dropzone = document.getElementById('dropzone');
+            const thumbPreview = document.getElementById('thumbPreview');
+            const sampleBtn = document.getElementById('sampleBtn');
+
+            const modeToggle = document.getElementById('modeToggle');
+            const themePills = document.getElementById('themePills');
+            const stickerSelect = document.getElementById('stickerSelect');
+            const filterSelect = document.getElementById('filterSelect');
+            const dpiSelect = document.getElementById('dpiSelect');
+
+            const idName = document.getElementById('idName');
+            const idHandle = document.getElementById('idHandle');
+            const idStack = document.getElementById('idStack');
+            const idTitle = document.getElementById('idTitle');
+            const idFormat = document.getElementById('idFormat');
+            const qrData = document.getElementById('qrData');
+            const magicBtn = document.getElementById('magicTitleBtn');
+
+            const downloadPngBtn = document.getElementById('downloadPngBtn');
+            const downloadJpgBtn = document.getElementById('downloadJpgBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const renderInfo = document.getElementById('renderInfo');
+
+            const toastContainer = document.getElementById('toastContainer');
+
+            // ------------------------------------------------------------
+            // State
+            // ------------------------------------------------------------
+            const state = {
+                mode: 'pfp', // 'pfp' | 'id'
+                theme: 'goa-sunset',
+                sticker: 'none',
+                filter: 'none',
+                dpi: 2,
+                // image
+                image: null, // HTMLImageElement
+                imageUrl: null, // for sample fallback
+                // transform
+                panX: 0,
+                panY: 0,
+                zoom: 1,
+                // id fields
+                name: 'Alex Rivera',
+                handle: '@alex_builder',
+                stack: 'Solidity · React · AI',
+                title: '10x Ship Machine',
+                idFormat: 'portrait',
+                qrData: 'HH Goa 2026',
+                // generated QR code canvas (cached)
+                qrCanvas: null,
+            };
+
+            // Magic titles pool
+            const MAGIC_TITLES = [
+                'GPU Whisperer', '10x Ship Machine', 'Zero-to-One Founder',
+                'AI Alchemist', 'Chain Breaker', 'Pixel Sorcerer',
+                'DeFi Architect', 'Rust Wrangler', 'ZKP Wizard',
+                'Edge Lord', 'Cloud Surfer', 'Data Druid',
+                'Full-Stack Samurai', 'DevEx Evangelist', 'Protocol Ninja',
+                'On-Chain Oracle', 'Smart Contract Sage', 'Web3 Pioneer',
+                'Mesh Maestro', 'Sovereign Builder', 'Infinite Crafter'
+            ];
+
+            // ------------------------------------------------------------
+            // Toast
+            // ------------------------------------------------------------
+            function showToast(message, type = 'success') {
+                const el = document.createElement('div');
+                el.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+                el.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+                toastContainer.appendChild(el);
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transition = 'opacity 0.3s';
+                    setTimeout(() => el.remove(), 350);
+                }, 2800);
+            }
+
+            // ------------------------------------------------------------
+            // Helpers
+            // ------------------------------------------------------------
+            function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+
+            function loadImage(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = () => reject(new Error('Failed to load image'));
+                    img.src = src;
+                });
+            }
+
+            // Generate a random magic title
+            function randomMagicTitle() {
+                return MAGIC_TITLES[Math.floor(Math.random() * MAGIC_TITLES.length)];
+            }
+
+            // ------------------------------------------------------------
+            // HEIC conversion via heic2any
+            // ------------------------------------------------------------
+            async function convertHeic(file) {
+                if (typeof heic2any === 'undefined') {
+                    throw new Error('heic2any library not loaded');
+                }
+                const result = await heic2any({
+                    blob: file,
+                    toType: 'image/png',
+                    quality: 0.9,
+                });
+                return result;
+            }
+
+            // ------------------------------------------------------------
+            // File upload handler
+            // ------------------------------------------------------------
+            async function handleFile(file) {
+                try {
+                    let blob = file;
+                    // Check HEIC
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const mime = file.type;
+                    if (ext === 'heic' || ext === 'heif' || mime === 'image/heic' || mime === 'image/heif') {
+                        showToast('Converting HEIC …', 'success');
+                        blob = await convertHeic(file);
+                    }
+                    const url = URL.createObjectURL(blob);
+                    const img = await loadImage(url);
+                    state.image = img;
+                    state.imageUrl = url;
+                    // thumb
+                    thumbPreview.src = url;
+                    dropzone.classList.add('has-image');
+                    // reset transform
+                    state.panX = 0;
+                    state.panY = 0;
+                    state.zoom = 1;
+                    render();
+                    showToast('Photo loaded ✅', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to load image: ' + err.message, 'error');
+                }
+            }
+
+            // ------------------------------------------------------------
+            // Sample avatar
+            // ------------------------------------------------------------
+            async function loadSample() {
+                // Use a public placeholder avatar (UI Avatars API)
+                const seed = 'HHGoa' + Date.now();
+                const url = `https://ui-avatars.com/api/?name=HH+Goa&size=400&background=0f172a&color=00f2fe&font-size=0.5&bold=true`;
+                try {
+                    const img = await loadImage(url);
+                    state.image = img;
+                    state.imageUrl = url;
+                    thumbPreview.src = url;
+                    dropzone.classList.add('has-image');
+                    state.panX = 0;
+                    state.panY = 0;
+                    state.zoom = 1;
+                    render();
+                    showToast('Sample avatar loaded 🚀', 'success');
+                } catch (err) {
+                    showToast('Sample load failed', 'error');
+                }
+            }
+
+            // ------------------------------------------------------------
+            // Render engine
+            // ------------------------------------------------------------
+            function render() {
+                const mode = state.mode;
+                const theme = state.theme;
+                const sticker = state.sticker;
+                const filter = state.filter;
+                const dpi = parseInt(dpiSelect.value, 10) || 2;
+                state.dpi = dpi;
+
+                const img = state.image;
+
+                if (mode === 'pfp') {
+                    renderPFP(img, theme, sticker, filter, dpi);
+                } else {
+                    renderIDCard(img, dpi);
+                }
+            }
+
+            // ---- PFP Renderer ----
+            function renderPFP(img, theme, sticker, filter, dpi) {
+                const baseSize = 800;
+                const size = baseSize * dpi;
+                canvas.width = size;
+                canvas.height = size;
+                canvas.style.aspectRatio = '1 / 1';
+
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, size, size);
+
+                // Background
+                const bg = getThemeBackground(theme, size);
+                const grad = ctx.createLinearGradient(0, 0, size, size);
+                for (const stop of bg) {
+                    grad.addColorStop(stop.pos, stop.color);
+                }
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, size, size);
+
+                // Decorative elements per theme
+                drawThemeDecor(theme, size, ctx);
+
+                // Photo (clipped circle) with pan/zoom
+                if (img) {
+                    const cx = size / 2;
+                    const cy = size / 2;
+                    const radius = size * 0.38;
+                    const zoom = state.zoom || 1;
+                    const panX = (state.panX || 0) * dpi;
+                    const panY = (state.panY || 0) * dpi;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.clip();
+
+                    // Draw image with transform
+                    const imgAspect = img.width / img.height;
+                    let drawW, drawH, dx, dy;
+                    if (imgAspect > 1) {
+                        drawH = radius * 2 * 1.2 * zoom;
+                        drawW = drawH * imgAspect;
+                    } else {
+                        drawW = radius * 2 * 1.2 * zoom;
+                        drawH = drawW / imgAspect;
+                    }
+                    dx = cx - drawW / 2 + panX;
+                    dy = cy - drawH / 2 + panY;
+
+                    // Apply filter
+                    if (filter !== 'none') {
+                        applyFilter(ctx, filter, size);
+                    }
+
+                    ctx.drawImage(img, dx, dy, drawW, drawH);
+                    ctx.restore();
+
+                    // Border ring
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.strokeStyle = getThemeRing(theme);
+                    ctx.lineWidth = size * 0.025;
+                    ctx.shadowColor = getThemeGlow(theme);
+                    ctx.shadowBlur = size * 0.06;
+                    ctx.stroke();
+                    ctx.restore();
+                } else {
+                    // placeholder
+                    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+                    ctx.beginPath();
+                    ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                    ctx.font = `${size * 0.06}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('📸', size / 2, size / 2);
+                }
+
+                // Frame overlay (border effects)
+                drawFrameOverlay(theme, size, ctx);
+
+                // Sticker
+                if (sticker !== 'none') {
+                    drawSticker(sticker, size, ctx);
+                }
+
+                // HH Goa 2026 branding
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                const brandSize = size * 0.055;
+                ctx.font = `700 ${brandSize}px 'Orbitron', monospace`;
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = size * 0.03;
+                const gradBrand = ctx.createLinearGradient(size * 0.2, 0, size * 0.8, 0);
+                gradBrand.addColorStop(0, '#ff6b35');
+                gradBrand.addColorStop(0.5, '#fbbf24');
+                gradBrand.addColorStop(1, '#00f2fe');
+                ctx.fillStyle = gradBrand;
+                ctx.fillText('HH GOA 2026', size / 2, size - size * 0.045);
+                ctx.restore();
+
+                // update info
+                renderInfo.textContent = `${size}×${size} · 1:1  PFP · ${theme.replace('-',' ')}`;
+            }
+
+            // ---- ID Card Renderer ----
+            function renderIDCard(img, dpi) {
+                const format = state.idFormat || 'portrait';
+                let w, h;
+                if (format === 'portrait') {
+                    w = 800;
+                    h = 1067;
+                } else {
+                    w = 1067;
+                    h = 600;
+                }
+                const sizeW = w * dpi;
+                const sizeH = h * dpi;
+                canvas.width = sizeW;
+                canvas.height = sizeH;
+                canvas.style.aspectRatio = `${w} / ${h}`;
+
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, sizeW, sizeH);
+
+                // Background
+                const bgGrad = ctx.createLinearGradient(0, 0, sizeW, sizeH);
+                bgGrad.addColorStop(0, '#0f172a');
+                bgGrad.addColorStop(0.4, '#1e293b');
+                bgGrad.addColorStop(0.7, '#0f172a');
+                bgGrad.addColorStop(1, '#0a0f1f');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, sizeW, sizeH);
+
+                // Metallic accent strips
+                const stripGrad = ctx.createLinearGradient(0, 0, sizeW, 0);
+                stripGrad.addColorStop(0, '#ff6b35');
+                stripGrad.addColorStop(0.3, '#fbbf24');
+                stripGrad.addColorStop(0.6, '#00f2fe');
+                stripGrad.addColorStop(1, '#a78bfa');
+                ctx.fillStyle = stripGrad;
+                const stripH = sizeH * 0.012;
+                ctx.fillRect(0, sizeH * 0.08, sizeW, stripH);
+                ctx.fillRect(0, sizeH * 0.92, sizeW, stripH);
+
+                // Logo watermark (subtle)
+                ctx.save();
+                ctx.globalAlpha = 0.04;
+                ctx.font = `900 ${sizeH * 0.25}px 'Orbitron', monospace`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#fff';
+                ctx.fillText('HH', sizeW * 0.5, sizeH * 0.5);
+                ctx.restore();
+
+                // Photo
+                const photoSize = sizeH * 0.22;
+                const photoX = sizeW * 0.06;
+                const photoY = sizeH * 0.18;
+                if (img) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.roundRect(photoX, photoY, photoSize, photoSize, sizeW * 0.02);
+                    ctx.closePath();
+                    ctx.clip();
+                    const imgAspect = img.width / img.height;
+                    let dw, dh;
+                    if (imgAspect > 1) {
+                        dh = photoSize;
+                        dw = dh * imgAspect;
+                    } else {
+                        dw = photoSize;
+                        dh = dw / imgAspect;
+                    }
+                    const dx = photoX + (photoSize - dw) / 2;
+                    const dy = photoY + (photoSize - dh) / 2;
+                    ctx.drawImage(img, dx, dy, dw, dh);
+                    ctx.restore();
+                    // border
+                    ctx.strokeStyle = 'rgba(0,242,254,0.3)';
+                    ctx.lineWidth = sizeW * 0.006;
+                    ctx.beginPath();
+                    ctx.roundRect(photoX, photoY, photoSize, photoSize, sizeW * 0.02);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+                    ctx.beginPath();
+                    ctx.roundRect(photoX, photoY, photoSize, photoSize, sizeW * 0.02);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+                    ctx.font = `${photoSize * 0.4}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('📸', photoX + photoSize / 2, photoY + photoSize / 2);
+                }
+
+                // Name
+                ctx.save();
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'bottom';
+                const nameSize = sizeH * 0.055;
+                ctx.font = `700 ${nameSize}px 'Inter', sans-serif`;
+                ctx.fillStyle = '#f1f5f9';
+                const nameX = photoX + photoSize + sizeW * 0.04;
+                const nameY = photoY + photoSize * 0.35;
+                ctx.fillText(state.name || 'Builder Name', nameX, nameY);
+                ctx.restore();
+
+                // Handle
+                ctx.save();
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                const handleSize = sizeH * 0.032;
+                ctx.font = `500 ${handleSize}px 'Inter', sans-serif`;
+                ctx.fillStyle = '#94a3b8';
+                const handleX = nameX;
+                const handleY = photoY + photoSize * 0.42;
+                ctx.fillText(state.handle || '@handle', handleX, handleY);
+                ctx.restore();
+
+                // Stack pills
+                const stackItems = (state.stack || '').split('·').map(s => s.trim()).filter(Boolean);
+                const pillY = photoY + photoSize * 0.58;
+                let pillX = nameX;
+                const pillH = sizeH * 0.04;
+                const pillPad = sizeW * 0.015;
+                ctx.save();
+                for (const item of stackItems) {
+                    const txt = item;
+                    ctx.font = `600 ${sizeH * 0.028}px 'Inter', sans-serif`;
+                    const metrics = ctx.measureText(txt);
+                    const tw = metrics.width;
+                    const pw = tw + pillPad * 2;
+                    ctx.beginPath();
+                    ctx.roundRect(pillX, pillY, pw, pillH, sizeW * 0.02);
+                    ctx.fillStyle = 'rgba(0,242,254,0.08)';
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,242,254,0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.fillStyle = '#00f2fe';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.font = `600 ${sizeH * 0.028}px 'Inter', sans-serif`;
+                    ctx.fillText(txt, pillX + pillPad, pillY + pillH / 2);
+                    pillX += pw + sizeW * 0.015;
+                    if (pillX > sizeW * 0.7) break;
+                }
+                ctx.restore();
+
+                // Builder Title (with badge)
+                const titleY = photoY + photoSize + sizeH * 0.08;
+                ctx.save();
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                const titleSize = sizeH * 0.045;
+                ctx.font = `700 ${titleSize}px 'Orbitron', monospace`;
+                const titleGrad = ctx.createLinearGradient(0, 0, sizeW, 0);
+                titleGrad.addColorStop(0, '#fbbf24');
+                titleGrad.addColorStop(1, '#ff6b35');
+                ctx.fillStyle = titleGrad;
+                ctx.fillText('⚡ ' + (state.title || 'Builder'), nameX, titleY);
+                ctx.restore();
+
+                // QR Code
+                const qrSize = sizeH * 0.18;
+                const qrX = sizeW - qrSize - sizeW * 0.06;
+                const qrY = sizeH * 0.18;
+                drawQRCode(ctx, state.qrData || 'HH Goa 2026', qrX, qrY, qrSize);
+
+                // HH Goa 2026 label bottom
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                const footerSize = sizeH * 0.032;
+                ctx.font = `700 ${footerSize}px 'Orbitron', monospace`;
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                ctx.fillText('HH GOA 2026 · BUILDER', sizeW / 2, sizeH - sizeH * 0.04);
+                ctx.restore();
+
+                // small decorative barcode line
+                ctx.save();
+                for (let i = 0; i < 40; i++) {
+                    const x = sizeW * 0.06 + i * (sizeW * 0.022);
+                    const h = sizeH * 0.015 + Math.sin(i * 0.7) * sizeH * 0.005;
+                    ctx.fillStyle = i % 3 === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)';
+                    ctx.fillRect(x, sizeH - sizeH * 0.06, sizeW * 0.008, h);
+                }
+                ctx.restore();
+
+                renderInfo.textContent = `${sizeW}×${sizeH} · ${format}  ID Card`;
+            }
+
+            // ---- QR Code drawer ----
+            function drawQRCode(ctx, data, x, y, size) {
+                if (typeof QRCode === 'undefined') {
+                    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+                    ctx.fillRect(x, y, size, size);
+                    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                    ctx.font = `${size*0.15}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('QR', x + size / 2, y + size / 2);
+                    return;
+                }
+                try {
+                    // Generate QR as canvas
+                    const qrCanvas = document.createElement('canvas');
+                    const qrSize = 200;
+                    qrCanvas.width = qrSize;
+                    qrCanvas.height = qrSize;
+                    const qr = new QRCode(qrCanvas, {
+                        text: data || 'HH Goa 2026',
+                        width: qrSize,
+                        height: qrSize,
+                        colorDark: '#00f2fe',
+                        colorLight: 'transparent',
+                        correctLevel: QRCode.CorrectLevel.H,
+                    });
+                    // Draw on main canvas
+                    ctx.drawImage(qrCanvas, x, y, size, size);
+                    // border
+                    ctx.strokeStyle = 'rgba(0,242,254,0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, size, size);
+                } catch (e) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+                    ctx.fillRect(x, y, size, size);
+                }
+            }
+
+            // ---- Theme helpers ----
+            function getThemeBackground(theme, size) {
+                const s = size;
+                switch (theme) {
+                    case 'goa-sunset':
+                        return [
+                            { pos: 0, color: '#1a0a1e' },
+                            { pos: 0.4, color: '#4a1942' },
+                            { pos: 0.7, color: '#c84b31' },
+                            { pos: 1, color: '#ff6b35' },
+                        ];
+                    case 'cyber-neon':
+                        return [
+                            { pos: 0, color: '#0a0f1f' },
+                            { pos: 0.5, color: '#0d1b2a' },
+                            { pos: 1, color: '#1b2a4a' },
+                        ];
+                    case 'golden-elite':
+                        return [
+                            { pos: 0, color: '#1a120b' },
+                            { pos: 0.5, color: '#3d2b1f' },
+                            { pos: 1, color: '#7a5a3a' },
+                        ];
+                    case 'minimal-dark':
+                    default:
+                        return [
+                            { pos: 0, color: '#0f172a' },
+                            { pos: 1, color: '#1e293b' },
+                        ];
+                }
+            }
+
+            function getThemeRing(theme) {
+                switch (theme) {
+                    case 'goa-sunset':
+                        return 'rgba(255,107,53,0.6)';
+                    case 'cyber-neon':
+                        return 'rgba(0,242,254,0.7)';
+                    case 'golden-elite':
+                        return 'rgba(251,191,36,0.6)';
+                    default:
+                        return 'rgba(255,255,255,0.2)';
+                }
+            }
+
+            function getThemeGlow(theme) {
+                switch (theme) {
+                    case 'goa-sunset':
+                        return 'rgba(255,107,53,0.3)';
+                    case 'cyber-neon':
+                        return 'rgba(0,242,254,0.4)';
+                    case 'golden-elite':
+                        return 'rgba(251,191,36,0.3)';
+                    default:
+                        return 'rgba(255,255,255,0.05)';
+                }
+            }
+
+            function drawThemeDecor(theme, size, ctx) {
+                const s = size;
+                ctx.save();
+                switch (theme) {
+                    case 'goa-sunset': {
+                        // sun
+                        const grad = ctx.createRadialGradient(s * 0.85, s * 0.15, 0, s * 0.85, s * 0.15, s * 0.4);
+                        grad.addColorStop(0, 'rgba(255,107,53,0.2)');
+                        grad.addColorStop(1, 'rgba(255,107,53,0)');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.arc(s * 0.85, s * 0.15, s * 0.4, 0, Math.PI * 2);
+                        ctx.fill();
+                        // rays
+                        for (let i = 0; i < 12; i++) {
+                            const angle = i / 12 * Math.PI * 2 + 0.2;
+                            const r1 = s * 0.3;
+                            const r2 = s * 0.38;
+                            ctx.beginPath();
+                            ctx.moveTo(s * 0.85 + Math.cos(angle) * r1, s * 0.15 + Math.sin(angle) * r1);
+                            ctx.lineTo(s * 0.85 + Math.cos(angle + 0.06) * r2, s * 0.15 + Math.sin(angle + 0.06) * r2);
+                            ctx.strokeStyle = 'rgba(255,107,53,0.08)';
+                            ctx.lineWidth = s * 0.015;
+                            ctx.stroke();
+                        }
+                        break;
+                    }
+                    case 'cyber-neon': {
+                        // grid
+                        ctx.strokeStyle = 'rgba(0,242,254,0.03)';
+                        ctx.lineWidth = 1;
+                        for (let i = 0; i < 20; i++) {
+                            const pos = i / 20 * s;
+                            ctx.beginPath();
+                            ctx.moveTo(pos, 0);
+                            ctx.lineTo(pos, s);
+                            ctx.stroke();
+                            ctx.beginPath();
+                            ctx.moveTo(0, pos);
+                            ctx.lineTo(s, pos);
+                            ctx.stroke();
+                        }
+                        // corner accents
+                        const c = s * 0.08;
+                        ctx.strokeStyle = 'rgba(0,242,254,0.1)';
+                        ctx.lineWidth = s * 0.015;
+                        [
+                            [0, 0, 1, 1],
+                            [1, 0, -1, 1],
+                            [0, 1, 1, -1],
+                            [1, 1, -1, -1]
+                        ].forEach(([sx, sy, dx, dy]) => {
+                            ctx.beginPath();
+                            const cx = sx === 0 ? 0 : s;
+                            const cy = sy === 0 ? 0 : s;
+                            ctx.moveTo(cx + dx * c, cy);
+                            ctx.lineTo(cx, cy);
+                            ctx.lineTo(cx, cy + dy * c);
+                            ctx.stroke();
+                        });
+                        break;
+                    }
+                    case 'golden-elite': {
+                        // diamond pattern
+                        ctx.strokeStyle = 'rgba(251,191,36,0.03)';
+                        ctx.lineWidth = 1;
+                        for (let i = -10; i < 10; i++) {
+                            const pos = i * s * 0.06 + s * 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(pos, 0);
+                            ctx.lineTo(pos + s * 0.06, s);
+                            ctx.stroke();
+                            ctx.beginPath();
+                            ctx.moveTo(pos - s * 0.03, 0);
+                            ctx.lineTo(pos + s * 0.03, s);
+                            ctx.stroke();
+                        }
+                        break;
+                    }
+                    default: {
+                        // subtle vignette
+                        const grad = ctx.createRadialGradient(s / 2, s / 2, s * 0.2, s / 2, s / 2, s * 0.8);
+                        grad.addColorStop(0, 'rgba(255,255,255,0)');
+                        grad.addColorStop(1, 'rgba(0,0,0,0.15)');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(0, 0, s, s);
+                    }
+                }
+                ctx.restore();
+            }
+
+            function drawFrameOverlay(theme, size, ctx) {
+                const s = size;
+                ctx.save();
+                const r = s * 0.42;
+                const cx = s / 2;
+                const cy = s / 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.closePath();
+                // outer glow ring
+                ctx.shadowColor = getThemeGlow(theme);
+                ctx.shadowBlur = s * 0.08;
+                ctx.strokeStyle = getThemeRing(theme);
+                ctx.lineWidth = s * 0.02;
+                ctx.stroke();
+                // inner thin ring
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                ctx.lineWidth = s * 0.006;
+                ctx.stroke();
+                ctx.restore();
+
+                // corner brackets
+                ctx.save();
+                const bLen = s * 0.06;
+                const bOff = s * 0.04;
+                const corners = [
+                    [-1, -1],
+                    [1, -1],
+                    [-1, 1],
+                    [1, 1]
+                ];
+                ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                ctx.lineWidth = s * 0.008;
+                for (const [sx, sy] of corners) {
+                    const bx = cx + sx * (r - bOff);
+                    const by = cy + sy * (r - bOff);
+                    ctx.beginPath();
+                    ctx.moveTo(bx + sx * bLen, by);
+                    ctx.lineTo(bx, by);
+                    ctx.lineTo(bx, by + sy * bLen);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            function drawSticker(sticker, size, ctx) {
+                const s = size;
+                ctx.save();
+                const emojis = {
+                    sun: '☀️',
+                    bolt: '⚡',
+                    star: '⭐',
+                    wave: '🌊'
+                };
+                const emoji = emojis[sticker] || '✨';
+                const fontSize = s * 0.12;
+                ctx.font = `${fontSize}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.4)';
+                ctx.shadowBlur = s * 0.04;
+                // position: bottom-right of photo area
+                const cx = s * 0.78;
+                const cy = s * 0.78;
+                ctx.fillText(emoji, cx, cy);
+                ctx.restore();
+            }
+
+            function applyFilter(ctx, filter, size) {
+                // Simple filter simulation via canvas globalCompositeOperation
+                // We apply it as a color overlay for simplicity
+                ctx.save();
+                if (filter === 'warm') {
+                    ctx.fillStyle = 'rgba(255,180,80,0.08)';
+                    ctx.fillRect(0, 0, size, size);
+                } else if (filter === 'neon') {
+                    ctx.fillStyle = 'rgba(0,242,254,0.06)';
+                    ctx.fillRect(0, 0, size, size);
+                } else if (filter === 'vintage') {
+                    ctx.fillStyle = 'rgba(180,120,60,0.07)';
+                    ctx.fillRect(0, 0, size, size);
+                }
+                ctx.restore();
+            }
+
+            // ---- roundRect polyfill for Canvas ----
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+                    const r = typeof radii === 'number' ? radii : (radii || 0);
+                    this.moveTo(x + r, y);
+                    this.lineTo(x + w - r, y);
+                    this.quadraticCurveTo(x + w, y, x + w, y + r);
+                    this.lineTo(x + w, y + h - r);
+                    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    this.lineTo(x + r, y + h);
+                    this.quadraticCurveTo(x, y + h, x, y + h - r);
+                    this.lineTo(x, y + r);
+                    this.quadraticCurveTo(x, y, x + r, y);
+                    return this;
+                };
+            }
+
+            // ------------------------------------------------------------
+            // Export functions
+            // ------------------------------------------------------------
+            function getCanvasBlob(mimeType = 'image/png', quality = 0.92) {
+                return new Promise((resolve) => {
+                    canvas.toBlob((blob) => resolve(blob), mimeType, quality);
+                });
+            }
+
+            function downloadCanvas(filename, mimeType = 'image/png', quality = 0.92) {
+                getCanvasBlob(mimeType, quality).then((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    showToast(`Downloaded ${filename} ✅`, 'success');
+                });
+            }
+
+            async function copyCanvas() {
+                try {
+                    const blob = await getCanvasBlob('image/png', 1);
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            [blob.type]: blob
+                        })
+                    ]);
+                    showToast('Copied to clipboard 📋', 'success');
+                } catch (err) {
+                    showToast('Copy failed: ' + err.message, 'error');
+                }
+            }
+
+            function shareOnX() {
+                const mode = state.mode;
+                const text = mode === 'pfp' ?
+                    '🔥 My HH Goa 2026 PFP! 🏖️ Built with the HH Goa Generator. #HHGoa2026 #Builders' :
+                    '🎫 My HH Goa 2026 Builder ID Card! 🚀 Ready for #HHGoa2026. #Web3 #Builders';
+                const url = 'https://hhgoa2026.com';
+                const tweet = encodeURIComponent(`${text}\n\n${url}`);
+                const shareUrl = `https://twitter.com/intent/tweet?text=${tweet}`;
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+                showToast('Opening X / Twitter …', 'success');
+            }
+
+            // ------------------------------------------------------------
+            // UI Event Bindings
+            // ------------------------------------------------------------
+
+            // Mode toggle
+            modeToggle.addEventListener('click', (e) => {
+                const btn = e.target.closest('.mode-btn');
+                if (!btn) return;
+                const mode = btn.dataset.mode;
+                if (!mode) return;
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.mode = mode;
+                document.body.classList.toggle('mode-id', mode === 'id');
+                render();
+            });
+
+            // Theme pills
+            themePills.addEventListener('click', (e) => {
+                const pill = e.target.closest('.theme-pill');
+                if (!pill) return;
+                document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                state.theme = pill.dataset.theme;
+                render();
+            });
+
+            // Sticker
+            stickerSelect.addEventListener('change', () => {
+                state.sticker = stickerSelect.value;
+                render();
+            });
+
+            // Filter
+            filterSelect.addEventListener('change', () => {
+                state.filter = filterSelect.value;
+                render();
+            });
+
+            // DPI
+            dpiSelect.addEventListener('change', () => {
+                render();
+            });
+
+            // ID fields
+            idName.addEventListener('input', () => { state.name = idName.value;
+                render(); });
+            idHandle.addEventListener('input', () => { state.handle = idHandle.value;
+                render(); });
+            idStack.addEventListener('input', () => { state.stack = idStack.value;
+                render(); });
+            idTitle.addEventListener('input', () => { state.title = idTitle.value;
+                render(); });
+            idFormat.addEventListener('change', () => { state.idFormat = idFormat.value;
+                render(); });
+            qrData.addEventListener('input', () => { state.qrData = qrData.value;
+                render(); });
+
+            // Magic title
+            magicBtn.addEventListener('click', () => {
+                const newTitle = randomMagicTitle();
+                idTitle.value = newTitle;
+                state.title = newTitle;
+                render();
+                showToast(`✨ "${newTitle}"`, 'success');
+            });
+
+            // File input
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handleFile(e.target.files[0]);
+                }
+                e.target.value = '';
+            });
+
+            // Drag & drop
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            // Sample
+            sampleBtn.addEventListener('click', loadSample);
+
+            // Canvas interaction: drag & zoom
+            let isDragging = false;
+            let dragStartX = 0,
+                dragStartY = 0;
+            let panStartX = 0,
+                panStartY = 0;
+
+            wrapper.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                panStartX = state.panX;
+                panStartY = state.panY;
+                wrapper.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = (e.clientX - dragStartX) / (canvas.width / canvas.offsetWidth || 1);
+                const dy = (e.clientY - dragStartY) / (canvas.height / canvas.offsetHeight || 1);
+                state.panX = panStartX + dx;
+                state.panY = panStartY + dy;
+                render();
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                wrapper.style.cursor = 'default';
+            });
+
+            wrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.08 : 0.08;
+                state.zoom = clamp(state.zoom + delta, 0.4, 3);
+                render();
+            }, { passive: false });
+
+            // Touch support for mobile
+            let touchStartX = 0,
+                touchStartY = 0;
+            let touchPanStartX = 0,
+                touchPanStartY = 0;
+            let lastTouchDist = 0;
+
+            wrapper.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    touchPanStartX = state.panX;
+                    touchPanStartY = state.panY;
+                } else if (e.touches.length === 2) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    lastTouchDist = Math.sqrt(dx * dx + dy * dy);
+                }
+            }, { passive: true });
+
+            wrapper.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (e.touches.length === 1) {
+                    const dx = (e.touches[0].clientX - touchStartX) / (canvas.width / canvas.offsetWidth || 1);
+                    const dy = (e.touches[0].clientY - touchStartY) / (canvas.height / canvas.offsetHeight || 1);
+                    state.panX = touchPanStartX + dx;
+                    state.panY = touchPanStartY + dy;
+                    render();
+                } else if (e.touches.length === 2) {
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const delta = (dist - lastTouchDist) / 200;
+                    state.zoom = clamp(state.zoom + delta, 0.4, 3);
+                    lastTouchDist = dist;
+                    render();
+                }
+            }, { passive: false });
+
+            wrapper.addEventListener('touchend', () => {
+                lastTouchDist = 0;
+            }, { passive: true });
+
+            // --- Action buttons ---
+            downloadPngBtn.addEventListener('click', () => {
+                const mode = state.mode;
+                const ext = mode === 'pfp' ? 'pfp' : 'idcard';
+                downloadCanvas(`hh-goa-2026-${ext}.png`, 'image/png', 1);
+            });
+
+            downloadJpgBtn.addEventListener('click', () => {
+                const mode = state.mode;
+                const ext = mode === 'pfp' ? 'pfp' : 'idcard';
+                downloadCanvas(`hh-goa-2026-${ext}.jpg`, 'image/jpeg', 0.92);
+            });
+
+            copyBtn.addEventListener('click', copyCanvas);
+
+            shareBtn.addEventListener('click', shareOnX);
+
+            // ------------------------------------------------------------
+            // Init
+            // ------------------------------------------------------------
+            // Set default mode
+            document.body.classList.remove('mode-id');
+            state.mode = 'pfp';
+            document.querySelector('.mode-btn[data-mode="pfp"]').classList.add('active');
+            document.querySelector('.mode-btn[data-mode="id"]').classList.remove('active');
+
+            // Load sample on init
+            loadSample();
+
+            // Also render on any change
+            render();
+
+            // Expose state for debugging
+            window.__state = state;
+
+            console.log('🚀 HH Goa 2026 Generator ready');
+        })();
+    </script>
+</body>
+</html>
